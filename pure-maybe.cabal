@@ -1,0 +1,24 @@
+name:                pure-maybe
+version:             0.8.0.0
+homepage:            purehs.org/doc/pure-maybe
+synopsis:            Suspense-ful Maybe viewer
+license:             BSD3
+license-file:        LICENSE
+author:              Sean Hickman
+maintainer:          sean@grumply.com
+category:            Web
+build-type:          Simple
+extra-source-files:  CHANGELOG.md
+cabal-version:       >=1.10
+
+source-repository head
+  type: git
+  location: https://github.com/grumply/pure-maybe.git
+
+library
+  exposed-modules:     Pure.Maybe
+  build-depends:       base,
+                       pure-elm,
+                       pure-default
+  hs-source-dirs:      src
+  default-language:    Haskell2010
