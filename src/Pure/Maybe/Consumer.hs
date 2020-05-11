@@ -135,7 +135,7 @@ startTroubleMonitor =
     Just (t,_) -> do
       tid <- monitor t Trouble 
       lift $ modify $ \m -> m 
-        { suspenseMonitor = Just tid }
+        { troubleMonitor = Just tid }
 
 stopTroubleMonitor :: Elm (Message a) => ConsumerM a ()
 stopTroubleMonitor = do
