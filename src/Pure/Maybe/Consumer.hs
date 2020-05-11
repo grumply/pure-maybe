@@ -158,7 +158,10 @@ setDelayView =
 startDelayer :: Elm (Message a) => a -> ConsumerM a ()
 startDelayer a =
   asks (_delaying . options) >>= \case
-    Nothing -> pure ()
+    Nothing -> 
+      asks viewer >>= \f ->
+        lift $ modify $ \m -> m 
+          { current = f a }
     Just (t,_) -> do
       tid <- monitor t (Ready a)
       lift $ modify $ \m -> m
