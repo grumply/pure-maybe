@@ -17,7 +17,7 @@ import Data.Foldable
 import Data.Traversable
 import Data.Typeable
 
-data Model tag a = Model
+data Model a = Model
   { producer :: Maybe ThreadId
   , evitable :: Maybe a
   }
@@ -28,27 +28,24 @@ data Message a
   | Eventuated a
   | Shutdown
 
--- | Manage the production of a tagged `Maybe a` value.
+-- | Manage the production of a `Maybe a` value.
 --
--- Note: To disambiguate values of the same type for the purposes of diffing, 
---       a tag is required.
---
--- > producing @MyTag someNetworkRequest (consuming someResponseViewer)
+-- > producing someNetworkRequest (consuming someResponseViewer)
 --
 producing 
-  :: forall (tag :: *) a. (Typeable tag, Typeable a) 
+  :: forall a. Typeable a
   => IO a 
   -> (Maybe a -> View) 
   -> View
 producing io = run (App [Start] [Receive] [Shutdown] mdl update view)
   where
-    mdl = Model @tag Nothing Nothing
+    mdl = Model Nothing Nothing
  
     update :: Elm (Message a) 
            => Message a 
            -> (Maybe a -> View) 
-           -> Model tag a 
-           -> IO (Model tag a)
+           -> Model a 
+           -> IO (Model a)
     update Start _ Model {..} = do
       producer <- Just <$> forkIO (io >>= command . Eventuated)
       pure Model {..}
@@ -69,34 +66,31 @@ producing io = run (App [Start] [Receive] [Shutdown] mdl update view)
 
     view f Model {..} = f evitable
 
-data KeyedModel tag key a = KeyedModel
+data KeyedModel key a = KeyedModel
   { key :: key
   , keyedProducer :: Maybe ThreadId 
   , keyedEvitable :: Maybe a
   }
 
--- | Manage the production of a keyed and tagged `Maybe a` value.
+-- | Manage the production of a keyed `Maybe a` value.
 --
--- Note: To disambiguate values of the same type for the purposes of diffing, 
---       a tag and a key are required. 
---
--- > producingKeyed @MyTag someRequestData someNetworkRequest (consuming someResponseViewer)
+-- > producingKeyed someRequestData someNetworkRequest (consuming someResponseViewer)
 --
 producingKeyed
-  :: forall (tag :: *) key a. (Eq key, Typeable tag, Typeable key, Typeable a) 
+  :: forall key a. (Eq key, Typeable key, Typeable a) 
   => key
   -> (key -> IO a)
   -> (key -> Maybe a -> View) 
   -> View
 producingKeyed k p f = run (App [Start] [Receive] [Shutdown] mdl0 update view) (k,p,f)
   where
-    mdl0 = KeyedModel @tag k Nothing Nothing
+    mdl0 = KeyedModel k Nothing Nothing
 
     update :: Elm (Message a) 
            => Message a 
            -> (key,key -> IO a,key -> Maybe a -> View) 
-           -> KeyedModel tag key a 
-           -> IO (KeyedModel tag key a)
+           -> KeyedModel key a 
+           -> IO (KeyedModel key a)
     update Start (_,p,_) mdl = do
       mtid <- Just <$> forkIO (p (key mdl) >>= command . Eventuated)
       pure mdl { keyedProducer = mtid }
