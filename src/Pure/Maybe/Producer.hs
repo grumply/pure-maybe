@@ -37,7 +37,7 @@ producing
   => IO a 
   -> (Maybe a -> View) 
   -> View
-producing io = run (App [Start] [Receive] [Shutdown] mdl update view)
+producing io = run (App [Start] [Receive] [Shutdown] (pure mdl) update view)
   where
     mdl = Model Nothing Nothing
  
@@ -82,7 +82,7 @@ producingKeyed
   -> (key -> IO a)
   -> (key -> Maybe a -> View) 
   -> View
-producingKeyed k p f = run (App [Start] [Receive] [Shutdown] mdl0 update view) (k,p,f)
+producingKeyed k p f = run (App [Start] [Receive] [Shutdown] (pure mdl0) update view) (k,p,f)
   where
     mdl0 = KeyedModel k Nothing Nothing
 

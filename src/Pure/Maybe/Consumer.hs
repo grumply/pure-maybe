@@ -76,7 +76,7 @@ consumingWith
   -> Maybe a 
   -> View
 consumingWith = \os f ma -> 
-    run (App [Start] [Receive] [] mdl exec view) (Env os f ma)
+    run (App [Start] [Receive] [] (pure mdl) exec view) (Env os f ma)
   where
     mdl = Model 0 Nothing Nothing Nothing Null
     exec :: Elm (Message a) => Message a -> Env a -> Model -> IO Model
