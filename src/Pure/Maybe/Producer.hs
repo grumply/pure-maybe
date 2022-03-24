@@ -1,7 +1,7 @@
 {-# language AllowAmbiguousTypes, RankNTypes, 
       TypeApplications, RecordWildCards, 
       KindSignatures, ViewPatterns, 
-      ScopedTypeVariables 
+      ScopedTypeVariables, FlexibleContexts
   #-}
 module Pure.Maybe.Producer
   (-- * Producers

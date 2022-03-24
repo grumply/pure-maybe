@@ -1,7 +1,8 @@
 {-# language AllowAmbiguousTypes, RankNTypes, 
       TypeApplications, RecordWildCards, 
       KindSignatures, ViewPatterns, 
-      ScopedTypeVariables, LambdaCase
+      ScopedTypeVariables, LambdaCase,
+      FlexibleContexts
   #-}
 module Pure.Maybe.Consumer 
   ( -- * Consumers
